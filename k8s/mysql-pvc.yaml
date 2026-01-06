@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+  namespace: game-session
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  # Note: Adjust storageClassName based on your cluster's available storage classes
+  # Common options: standard, gp2 (AWS), pd-standard (GCP), default
+  # To list available classes: kubectl get storageclass
+  # storageClassName: standard
