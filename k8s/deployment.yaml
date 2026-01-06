@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: game-session-service
+  namespace: game-session
+  labels:
+    app: game-session-service
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: game-session-service
+  template:
+    metadata:
+      labels:
+        app: game-session-service
+    spec:
+      containers:
+      - name: game-session-service
+        image: game-session-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+          name: http
+        env:
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: game-session-config
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: game-session-config
+              key: DB_PORT
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: game-session-config
+              key: DB_NAME
+        - name: DB_USER
+          valueFrom:
+            configMapKeyRef:
+              name: game-session-config
+              key: DB_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: game-session-secret
+              key: DB_PASSWORD
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: game-session-config
+              key: PORT
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox:1.35
+        command: ['sh', '-c', 'until nc -z mysql-service 3306; do echo waiting for mysql; sleep 2; done;']

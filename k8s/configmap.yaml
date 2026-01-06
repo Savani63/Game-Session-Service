@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: game-session-config
+  namespace: game-session
+data:
+  DB_HOST: "mysql-service"
+  DB_PORT: "3306"
+  DB_NAME: "gamedb"
+  DB_USER: "gameuser"
+  PORT: "5000"
