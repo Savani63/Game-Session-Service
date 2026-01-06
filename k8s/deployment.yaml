@@ -17,8 +17,11 @@ spec:
     spec:
       containers:
       - name: game-session-service
+        # Note: Replace 'latest' with a specific version tag for production
+        # Example: game-session-service:v1.0.0
         image: game-session-service:latest
-        imagePullPolicy: IfNotPresent
+        # Use 'Always' with 'latest' tag or 'IfNotPresent' with version tags
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
           name: http
@@ -79,4 +82,4 @@ spec:
       initContainers:
       - name: wait-for-mysql
         image: busybox:1.35
-        command: ['sh', '-c', 'until nc -z mysql-service 3306; do echo waiting for mysql; sleep 2; done;']
+        command: ['sh', '-c', 'until wget -q -O- --timeout=1 mysql-service:3306 2>&1 | grep -q "mysql"; do echo waiting for mysql; sleep 2; done;']

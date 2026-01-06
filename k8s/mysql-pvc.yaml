@@ -9,4 +9,7 @@ spec:
   resources:
     requests:
       storage: 5Gi
-  storageClassName: standard
+  # Note: Adjust storageClassName based on your cluster's available storage classes
+  # Common options: standard, gp2 (AWS), pd-standard (GCP), default
+  # To list available classes: kubectl get storageclass
+  # storageClassName: standard
